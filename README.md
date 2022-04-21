@@ -5,7 +5,7 @@
 | 1  | Functor       | -                             | map                      |
 | 2  | Alt           | Functor + alt                 | map, alt                 |
 | 3  | Plus          | Alt + zero                    | map, alt, zero           |
-| 4  | Alternative   | Plus + Applicative            |                          |
+| 4  | Alternative   | Plus + Applicative            | map, alt, zero, ap, of   |
 | 5  | Apply         | Functor + ap                  | map, ap                  |
 | 6  | Applicative   | Apply + of                    | map, ap, of              |
 | 7  | Chain         | Apply + chain                 | map, ap, chain           |
