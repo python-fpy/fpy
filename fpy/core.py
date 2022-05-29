@@ -1,8 +1,9 @@
 from collections import deque
 from functools import partial, reduce, update_wrapper, wraps
 from inspect import getfullargspec, signature
-from itertools import islice, repeat, starmap
+from itertools import islice
 from operator import add, itemgetter
+from typing import Iterable
 
 # Functions
 
@@ -23,8 +24,8 @@ identity = partial(reduce, add, ())
 
 # compose function
 # https://stackoverflow.com/a/59232780
-def compose(*functions):
-    return reduce(lambda f, g: lambda x: g(f(x)), functions, identity)
+def compose(*fns):
+    return reduce(lambda f, g: lambda x: g(f(x)), reversed(fns), identity)
 
 
 # Curry
@@ -83,15 +84,15 @@ def always(x):
 
 # filter returns a filter object, we want it to return list
 def composable_filter(func):
-    return compose(partial(filter, func), list)
+    return compose(list, partial(filter, func))
 
 
 # map returns a map object, we want it to return list
 def composable_map(func):
-    return compose(partial(map, func), list)
+    return compose(list, partial(map, func))
 
 
-# Create a generation expression for an iterable
+# Create a generator expression for an iterable
 def build_gen_exp(iterable):
     return (x for x in iterable)
 
@@ -129,18 +130,27 @@ def nth(n, iterable):
 
 # first
 # get the first item from the iterable
-first = compose(iter, next)
+first = compose(next, iter)
 
 # second
 # get second item from the iterable
 # second = nth(2)
-second = compose(iter, partial(do, next), next)
+second = compose(next, partial(do, next), iter)
 
 
 # tail, get last n elements
 def tail(n: int):
-    return compose(iter, partial(deque, maxlen=n), list)
+    return compose(list, partial(deque, maxlen=n), iter)
 
 
 # last
-last = compose(tail(1), itemgetter(0))
+last = compose(itemgetter(0), tail(1))
+
+# Flatten
+# https://github.com/dabeaz/python-cookbook/blob/master/src/4/how_to_flatten_a_nested_sequence/example.py
+def flatten(nested_iterable, ignore_types=(str, bytes)):
+    for x in nested_iterable:
+        if isinstance(x, Iterable) and not isinstance(x, ignore_types):
+            yield from flatten(x)
+        else:
+            yield x
