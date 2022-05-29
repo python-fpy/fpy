@@ -2,8 +2,8 @@ from functools import partial
 from operator import add, mul
 
 from fpy.core import (always, composable_filter, composable_map, compose,
-                      curry, do, filter_falsy, first, flip, identity, last,
-                      nth, pipe, second, tail)
+                      curry, do, filter_falsy, first, flatten, flip, identity,
+                      last, nth, pipe, second, tail)
 
 multiply_10 = partial(mul, 10)
 add_10 = partial(add, 10)
@@ -15,7 +15,7 @@ def test_identity():
 
 
 def test_compose():
-    calc = 2 * 10 + 10
+    calc = (2 + 10) * 10
     assert compose(multiply_10, add_10)(2) == calc
 
 
@@ -86,3 +86,9 @@ def test_tail():
 
 def test_last():
     assert 100 == last(int_list)
+
+
+def test_flatten():
+    assert [1, 2, 3, 4, 5, 6, 7, 8, 9] == list(
+        flatten([1, [2, 3, [4, 5, 6, [7, 8, [9]]]]])
+    )
